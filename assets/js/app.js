@@ -23,6 +23,7 @@ class Despesa
   }
 }
 
+
 class Bd
 {
   constructor()
@@ -65,6 +66,32 @@ class Bd
     }
 
     return despesas
+  }
+
+  pesquisar(despesa)
+  {
+    let despesasFiltradas = Array()
+    despesasFiltradas = this.recuperarTodosRegistros()
+
+    if (despesa.ano != '')
+      despesasFiltradas = despesasFiltradas.filter(d => d.ano == despesa.ano)
+
+    if (despesa.mes != '')
+      despesasFiltradas = despesasFiltradas.filter(d => d.mes == despesa.mes)
+
+    if (despesa.dia != '')
+      despesasFiltradas = despesasFiltradas.filter(d => d.dia == despesa.dia)
+
+    if (despesa.tipo != '')
+      despesasFiltradas = despesasFiltradas.filter(d => d.tipo == despesa.tipo)
+
+    if (despesa.descricao != '')
+      despesasFiltradas = despesasFiltradas.filter(d => d.descricao == despesa.descricao)
+
+    if (despesa.valor != '')
+      despesasFiltradas = despesasFiltradas.filter(d => d.valor == despesa.valor)
+
+    return despesasFiltradas
   }
 }
 
@@ -120,12 +147,15 @@ function cadastrarDespesa()
 
 }
 
-function carregaListaDespesas()
+function carregaListaDespesas(despesas = Array(), filtro = false)
 {
-  let despesas = Array()
-  despesas = bd.recuperarTodosRegistros()
+  if (despesas.length == 0 && filtro == false)
+  {
+    despesas = bd.recuperarTodosRegistros()
+  }
 
   let listaDespesas = document.getElementById('listaDespesas')
+  listaDespesas.innerHTML = ''
 
   despesas.forEach(function(d)
   {
@@ -151,7 +181,6 @@ function carregaListaDespesas()
     linha.insertCell(1).innerHTML = d.tipo
     linha.insertCell(2).innerHTML = d.descricao
     linha.insertCell(3).innerHTML = d.valor
-
   })
 }
 
@@ -164,6 +193,9 @@ function pesquisarDespesa()
   let descricao = document.getElementById('descricao').value
   let valor = document.getElementById('valor').value
 
-  let despesas = new Despesa(ano, mes, dia, tipo, descricao, valor)
-  
+  let despesa = new Despesa(ano, mes, dia, tipo, descricao, valor)
+
+  let despesas = bd.pesquisar(despesa)
+
+  carregaListaDespesas(despesas, true)
 }
